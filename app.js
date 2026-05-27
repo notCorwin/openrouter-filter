@@ -49,6 +49,42 @@ function applyFilter() {
 
   dom.count.textContent = filtered.length;
   renderTable(sortFiltered(filtered));
+  saveFilterState();
+}
+
+// ── URL state ─────────────────────────────────────────────────────
+function saveFilterState() {
+  const p = new URLSearchParams();
+  p.set('ctxMin', dom.ctxMin.value);
+  p.set('ctxMax', dom.ctxMax.value);
+  p.set('inMin', dom.inPriceMin.value);
+  p.set('inMax', dom.inPriceMax.value);
+  p.set('outMin', dom.outPriceMin.value);
+  p.set('outMax', dom.outPriceMax.value);
+  p.set('or', dom.showOpenRouter.checked ? '1' : '0');
+  p.set('itext', dom.inText.checked ? '1' : '0');
+  p.set('otext', dom.outText.checked ? '1' : '0');
+  const checked = [...document.querySelectorAll('.param-cb:checked')].map(el => el.value);
+  if (checked.length) p.set('params', checked.join(','));
+  location.hash = p.toString();
+}
+
+function loadFilterState() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  const setVal = (id, key) => { if (p.has(key)) dom[id].value = p.get(key); };
+  setVal('ctxMin', 'ctxMin');
+  setVal('ctxMax', 'ctxMax');
+  setVal('inPriceMin', 'inMin');
+  setVal('inPriceMax', 'inMax');
+  setVal('outPriceMin', 'outMin');
+  setVal('outPriceMax', 'outMax');
+  if (p.has('or')) dom.showOpenRouter.checked = p.get('or') === '1';
+  if (p.has('itext')) dom.inText.checked = p.get('itext') === '1';
+  if (p.has('otext')) dom.outText.checked = p.get('otext') === '1';
+  if (p.has('params')) {
+    const checked = new Set(p.get('params').split(','));
+    document.querySelectorAll('.param-cb').forEach(el => { el.checked = checked.has(el.value); });
+  }
 }
 
 // ── Sort ───────────────────────────────────────────────────────────
@@ -56,8 +92,8 @@ function sortFiltered(list) {
   return list.slice().sort((a, b) => {
     let va, vb;
     switch (sortField) {
-      case 'name':      va = a.name;                 vb = b.name;                 break;
-      case 'id':        va = a.id;                   vb = b.id;                   break;
+      case 'name':      va = a.name || '';          vb = b.name || '';          break;
+      case 'id':        va = a.id || '';            vb = b.id || '';            break;
       case 'context':   va = a.context_length;       vb = b.context_length;       break;
       case 'prompt':    va = pricePerMillion((a.pricing||{}).prompt); vb = pricePerMillion((b.pricing||{}).prompt); break;
       case 'completion':va = pricePerMillion((a.pricing||{}).completion); vb = pricePerMillion((b.pricing||{}).completion); break;
@@ -184,20 +220,29 @@ function bindEvents() {
 
   // Delegate change events for dynamically-built parameter checkboxes
   dom.paramsBody.addEventListener('change', applyFilter);
+
+  dom.selectAllParams.addEventListener('click', () => toggleAllParams(true));
+  dom.clearAllParams.addEventListener('click', () => toggleAllParams(false));
+
+  window.addEventListener('hashchange', () => {
+    loadFilterState();
+    applyFilter();
+  });
 }
 
 // ── Init ───────────────────────────────────────────────────────────
 async function load() {
+  cacheDom();
   try {
     const r  = await fetch('https://openrouter.ai/api/v1/models');
     const j  = await r.json();
     allModels = j.data || j;
 
-    cacheDom();
     updateCounts();
     buildContextSelects();
     buildPriceSelects();
     buildParamCheckboxes();
+    loadFilterState();
     bindEvents();
     applyI18n();
   } catch (e) {

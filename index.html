@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Search and filter OpenRouter models by context length, pricing, modality, and supported parameters.">
 <title>OpenRouter Model Filter</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<noscript><p style="text-align:center;padding:40px;font-family:system-ui,sans-serif;">This app requires JavaScript.</p></noscript>
 <div class="container">
 
 <div class="header-bar">
@@ -41,7 +43,7 @@
       <select id="outPriceMax"></select>
     </div>
   </div>
-  <div class="filter-group" style="min-width:200px;">
+  <div class="filter-group modality-wrap">
     <label data-i18n="modalityLabel">Modality</label>
     <div class="checkbox-group">
       <label><input type="checkbox" id="inText" checked> <span data-i18n="inText">Input text</span></label>
@@ -52,8 +54,8 @@
   <div class="filter-group params-wrap">
     <label><span data-i18n="paramsLabel">Supported params</span> <span id="paramCount"></span></label>
     <div class="checkbox-group">
-      <span class="all-none" data-i18n="selectAll" onclick="toggleAllParams(true)">Select all</span>
-      <span class="all-none" data-i18n="clearAll" onclick="toggleAllParams(false)">Clear</span>
+      <span class="all-none" data-i18n="selectAll" id="selectAllParams">Select all</span>
+      <span class="all-none" data-i18n="clearAll" id="clearAllParams">Clear</span>
     </div>
     <div class="params-body" id="paramsBody"></div>
   </div>
@@ -77,7 +79,7 @@
 </table>
 </div>
 
-<script src="store.js"></script>
+<script src="state.js"></script>
 <script src="utils.js"></script>
 <script src="i18n.js"></script>
 <script src="app.js"></script>

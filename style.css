@@ -15,6 +15,7 @@ h1 { font-size: 20px; margin-bottom: 16px; }
 
 .filters { background: #fff; border-radius: 8px; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
 .filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 160px; }
+.modality-wrap { min-width: 200px; }
 .filter-group label { font-size: 12px; color: #666; font-weight: 600; }
 .filter-group input[type=range] { width: 140px; }
 .filter-group .value { font-size: 13px; color: #333; font-family: monospace; }
@@ -48,3 +49,12 @@ tr:hover td { background: #fafafa; }
 .id-cell { font-family: monospace; font-size: 12px; color: #555; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
 
 .error { text-align: center; padding: 40px; color: #dc2626; }
+
+@media (max-width: 768px) {
+  body { padding: 12px; }
+  .filters { flex-direction: column; }
+  .filter-group { min-width: 100%; }
+  table { font-size: 11px; }
+  th, td { padding: 6px 8px; }
+  .id-cell { max-width: 150px; }
+}

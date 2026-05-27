@@ -486,10 +486,6 @@ let LOCALE = detectLocale();
 let t = I18N[LOCALE] || I18N[DEFAULT_LOCALE];
 
 // ── i18n helpers ───────────────────────────────────────────────────
-function esc(s) {
-  return String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
-}
-
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
@@ -506,9 +502,16 @@ function applyI18n() {
   document.title = t.title || 'OpenRouter Model Filter';
 
   if (allModels.length > 0) {
+    // Preserve user's filter values before rebuilding translated selects
+    const selIds = ['ctxMin','ctxMax','inPriceMin','inPriceMax','outPriceMin','outPriceMax'];
+    const saved = {};
+    selIds.forEach(id => { if (dom[id]) saved[id] = dom[id].value; });
+
     updateCounts();
     buildContextSelects();
     buildPriceSelects();
+
+    selIds.forEach(id => { if (dom[id] && saved[id] !== undefined) dom[id].value = saved[id]; });
     applyFilter();
   }
 }

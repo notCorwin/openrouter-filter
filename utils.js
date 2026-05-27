@@ -1,4 +1,11 @@
+// ── HTML escape ───────────────────────────────────────────────────
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+}
+
 // ── Price & formatting utilities ───────────────────────────────────
+// Converts per-token pricing string (e.g. "0.000001") to per-million-tokens dollars.
+// OpenRouter API returns per-token prices; this normalises them for display.
 function pricePerMillion(s) {
   if (!s || s === '-1') return null;
   if (!s.includes('.')) return Math.max(parseInt(s, 10) * 1000000, 0);
