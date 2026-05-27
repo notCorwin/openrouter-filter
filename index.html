@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,16 @@
 body { font-family: system-ui, sans-serif; background: #f5f5f5; padding: 24px; color: #222; }
 .container { max-width: 1200px; margin: 0 auto; }
 h1 { font-size: 20px; margin-bottom: 16px; }
+
+.header-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.header-bar h1 { margin-bottom: 0; }
+
+.lang-switch { font-size: 12px; display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.lang-switch select {
+  font-size: 12px; padding: 3px 6px; border: 1px solid #ccc; border-radius: 4px;
+  background: #fff; cursor: pointer; outline: none;
+}
+.lang-switch select:hover { border-color: #888; }
 
 .filters { background: #fff; border-radius: 8px; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
 .filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 160px; }
@@ -46,7 +56,13 @@ tr:hover td { background: #fafafa; }
 </head>
 <body>
 <div class="container">
+
+<div class="header-bar">
 <h1>🔍 <span id="title">OpenRouter Model Filter</span></h1>
+<div class="lang-switch">
+  🌐 <select id="langSelect" onchange="switchLang(this.value)"></select>
+</div>
+</div>
 
 <div class="filters">
   <div class="filter-group">
@@ -107,15 +123,32 @@ tr:hover td { background: #fafafa; }
 </div>
 
 <script>
-// ── i18n ──────────────────────────────────────────────────────────
-const LOCALE = (() => {
-  const lang = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
-  const code = lang.split('-')[0];
-  if (code === 'zh') return 'zh';
-  if (code === 'ja') return 'ja';
-  return 'en';
-})();
+// ── Locales ───────────────────────────────────────────────────────
+// Language code → human name (native endonym)
+const LOCALES = {
+  en: 'English',
+  'zh-CN': '简体中文',
+  'zh-TW': '繁體中文',
+  ja: '日本語',
+  ko: '한국어',
+  fr: 'Français',
+  de: 'Deutsch',
+  es: 'Español',
+  pt: 'Português',
+  ru: 'Русский',
+  ar: 'العربية',
+  vi: 'Tiếng Việt',
+  th: 'ไทย',
+  it: 'Italiano',
+  tr: 'Türkçe',
+  nl: 'Nederlands',
+  pl: 'Polski',
+  uk: 'Українська',
+};
 
+const DEFAULT_LOCALE = 'en';
+
+// ── Translation table ─────────────────────────────────────────────
 const I18N = {
   en: {
     title: 'OpenRouter Model Filter',
@@ -142,7 +175,7 @@ const I18N = {
     colMaxOutput: 'Max Output',
     loadFailed: 'Load failed',
   },
-  zh: {
+  'zh-CN': {
     title: 'OpenRouter 模型筛选',
     contextLabel: '上下文',
     inPriceLabel: '输入价格',
@@ -164,8 +197,33 @@ const I18N = {
     colContext: '上下文',
     colInputPrice: '输入价格',
     colOutputPrice: '输出价格',
-    colMaxOutput: 'Max Output',
+    colMaxOutput: '最大输出',
     loadFailed: '加载失败',
+  },
+  'zh-TW': {
+    title: 'OpenRouter 模型篩選',
+    contextLabel: '上下文',
+    inPriceLabel: '輸入價格',
+    outPriceLabel: '輸出價格',
+    freeLabel: '免費模型',
+    showFree: '顯示免費模型',
+    modalityLabel: '模態',
+    inText: '輸入含 text',
+    outText: '輸出含 text',
+    paramsLabel: '支援的參數',
+    selectAll: '全選',
+    clearAll: '清除',
+    matched: '符合',
+    models: '個模型',
+    loading: '載入中...',
+    unlimited: '不限',
+    free: '免費',
+    colName: '名稱',
+    colContext: '上下文',
+    colInputPrice: '輸入價格',
+    colOutputPrice: '輸出價格',
+    colMaxOutput: '最大輸出',
+    loadFailed: '載入失敗',
   },
   ja: {
     title: 'OpenRouter モデルフィルター',
@@ -192,17 +250,414 @@ const I18N = {
     colMaxOutput: '最大出力',
     loadFailed: '読み込み失敗',
   },
+  ko: {
+    title: 'OpenRouter 모델 필터',
+    contextLabel: '컨텍스트',
+    inPriceLabel: '입력 가격',
+    outPriceLabel: '출력 가격',
+    freeLabel: '무료 모델',
+    showFree: '무료 모델 보기',
+    modalityLabel: '모달리티',
+    inText: '입력 텍스트',
+    outText: '출력 텍스트',
+    paramsLabel: '지원 파라미터',
+    selectAll: '모두 선택',
+    clearAll: '선택 해제',
+    matched: '일치',
+    models: '개 모델',
+    loading: '불러오는 중...',
+    unlimited: '무제한',
+    free: '무료',
+    colName: '이름',
+    colContext: '컨텍스트',
+    colInputPrice: '입력 가격',
+    colOutputPrice: '출력 가격',
+    colMaxOutput: '최대 출력',
+    loadFailed: '불러오기 실패',
+  },
+  fr: {
+    title: 'Filtre de modèles OpenRouter',
+    contextLabel: 'Contexte',
+    inPriceLabel: 'Prix entrée',
+    outPriceLabel: 'Prix sortie',
+    freeLabel: 'Modèles gratuits',
+    showFree: 'Montrer gratuits',
+    modalityLabel: 'Modalité',
+    inText: 'Texte entrée',
+    outText: 'Texte sortie',
+    paramsLabel: 'Paramètres supportés',
+    selectAll: 'Tout sélectionner',
+    clearAll: 'Effacer',
+    matched: 'Correspondants',
+    models: 'modèles',
+    loading: 'Chargement...',
+    unlimited: 'Illimité',
+    free: 'Gratuit',
+    colName: 'Nom',
+    colContext: 'Contexte',
+    colInputPrice: 'Prix entrée',
+    colOutputPrice: 'Prix sortie',
+    colMaxOutput: 'Sortie max',
+    loadFailed: 'Échec du chargement',
+  },
+  de: {
+    title: 'OpenRouter Modellfilter',
+    contextLabel: 'Kontext',
+    inPriceLabel: 'Eingabepreis',
+    outPriceLabel: 'Ausgabepreis',
+    freeLabel: 'Kostenlose Modelle',
+    showFree: 'Kostenlose anzeigen',
+    modalityLabel: 'Modalität',
+    inText: 'Eingabe Text',
+    outText: 'Ausgabe Text',
+    paramsLabel: 'Unterstützte Parameter',
+    selectAll: 'Alle auswählen',
+    clearAll: 'Leeren',
+    matched: 'Übereinstimmungen',
+    models: 'Modelle',
+    loading: 'Laden...',
+    unlimited: 'Unbegrenzt',
+    free: 'Kostenlos',
+    colName: 'Name',
+    colContext: 'Kontext',
+    colInputPrice: 'Eingabepreis',
+    colOutputPrice: 'Ausgabepreis',
+    colMaxOutput: 'Max Ausgabe',
+    loadFailed: 'Laden fehlgeschlagen',
+  },
+  es: {
+    title: 'Filtro de modelos OpenRouter',
+    contextLabel: 'Contexto',
+    inPriceLabel: 'Precio entrada',
+    outPriceLabel: 'Precio salida',
+    freeLabel: 'Modelos gratuitos',
+    showFree: 'Mostrar gratuitos',
+    modalityLabel: 'Modalidad',
+    inText: 'Texto entrada',
+    outText: 'Texto salida',
+    paramsLabel: 'Parámetros soportados',
+    selectAll: 'Seleccionar todo',
+    clearAll: 'Limpiar',
+    matched: 'Coincidencias',
+    models: 'modelos',
+    loading: 'Cargando...',
+    unlimited: 'Ilimitado',
+    free: 'Gratis',
+    colName: 'Nombre',
+    colContext: 'Contexto',
+    colInputPrice: 'Precio entrada',
+    colOutputPrice: 'Precio salida',
+    colMaxOutput: 'Salida máx',
+    loadFailed: 'Error al cargar',
+  },
+  pt: {
+    title: 'Filtro de modelos OpenRouter',
+    contextLabel: 'Contexto',
+    inPriceLabel: 'Preço entrada',
+    outPriceLabel: 'Preço saída',
+    freeLabel: 'Modelos gratuitos',
+    showFree: 'Mostrar gratuitos',
+    modalityLabel: 'Modalidade',
+    inText: 'Texto entrada',
+    outText: 'Texto saída',
+    paramsLabel: 'Parâmetros suportados',
+    selectAll: 'Selecionar tudo',
+    clearAll: 'Limpar',
+    matched: 'Correspondentes',
+    models: 'modelos',
+    loading: 'Carregando...',
+    unlimited: 'Ilimitado',
+    free: 'Grátis',
+    colName: 'Nome',
+    colContext: 'Contexto',
+    colInputPrice: 'Preço entrada',
+    colOutputPrice: 'Preço saída',
+    colMaxOutput: 'Saída máx',
+    loadFailed: 'Falha ao carregar',
+  },
+  ru: {
+    title: 'Фильтр моделей OpenRouter',
+    contextLabel: 'Контекст',
+    inPriceLabel: 'Цена ввода',
+    outPriceLabel: 'Цена вывода',
+    freeLabel: 'Бесплатные модели',
+    showFree: 'Показать бесплатные',
+    modalityLabel: 'Модальность',
+    inText: 'Ввод текста',
+    outText: 'Вывод текста',
+    paramsLabel: 'Поддерживаемые параметры',
+    selectAll: 'Выбрать все',
+    clearAll: 'Очистить',
+    matched: 'Совпадений',
+    models: 'моделей',
+    loading: 'Загрузка...',
+    unlimited: 'Безлимитно',
+    free: 'Бесплатно',
+    colName: 'Название',
+    colContext: 'Контекст',
+    colInputPrice: 'Цена ввода',
+    colOutputPrice: 'Цена вывода',
+    colMaxOutput: 'Макс вывод',
+    loadFailed: 'Ошибка загрузки',
+  },
+  ar: {
+    title: 'فلترة نماذج OpenRouter',
+    contextLabel: 'السياق',
+    inPriceLabel: 'سعر الإدخال',
+    outPriceLabel: 'سعر الإخراج',
+    freeLabel: 'النماذج المجانية',
+    showFree: 'إظهار المجانية',
+    modalityLabel: 'الطريقة',
+    inText: 'إدخال نص',
+    outText: 'إخراج نص',
+    paramsLabel: 'المعلمات المدعومة',
+    selectAll: 'تحديد الكل',
+    clearAll: 'مسح',
+    matched: 'المطابقة',
+    models: 'نموذج',
+    loading: 'جارٍ التحميل...',
+    unlimited: 'غير محدود',
+    free: 'مجاني',
+    colName: 'الاسم',
+    colContext: 'السياق',
+    colInputPrice: 'سعر الإدخال',
+    colOutputPrice: 'سعر الإخراج',
+    colMaxOutput: 'أقصى إخراج',
+    loadFailed: 'فشل التحميل',
+  },
+  vi: {
+    title: 'Bộ lọc mô hình OpenRouter',
+    contextLabel: 'Ngữ cảnh',
+    inPriceLabel: 'Giá đầu vào',
+    outPriceLabel: 'Giá đầu ra',
+    freeLabel: 'Mô hình miễn phí',
+    showFree: 'Hiện miễn phí',
+    modalityLabel: 'Phương thức',
+    inText: 'Văn bản đầu vào',
+    outText: 'Văn bản đầu ra',
+    paramsLabel: 'Tham số hỗ trợ',
+    selectAll: 'Chọn tất cả',
+    clearAll: 'Xóa',
+    matched: 'Khớp',
+    models: 'mô hình',
+    loading: 'Đang tải...',
+    unlimited: 'Không giới hạn',
+    free: 'Miễn phí',
+    colName: 'Tên',
+    colContext: 'Ngữ cảnh',
+    colInputPrice: 'Giá đầu vào',
+    colOutputPrice: 'Giá đầu ra',
+    colMaxOutput: 'Đầu ra tối đa',
+    loadFailed: 'Tải thất bại',
+  },
+  th: {
+    title: 'ตัวกรองโมเดล OpenRouter',
+    contextLabel: 'บริบท',
+    inPriceLabel: 'ราคาขาเข้า',
+    outPriceLabel: 'ราคาขาออก',
+    freeLabel: 'โมเดลฟรี',
+    showFree: 'แสดงโมเดลฟรี',
+    modalityLabel: 'รูปแบบ',
+    inText: 'ข้อความเข้า',
+    outText: 'ข้อความออก',
+    paramsLabel: 'พารามิเตอร์ที่รองรับ',
+    selectAll: 'เลือกทั้งหมด',
+    clearAll: 'ล้าง',
+    matched: 'ที่ตรงกัน',
+    models: 'โมเดล',
+    loading: 'กำลังโหลด...',
+    unlimited: 'ไม่จำกัด',
+    free: 'ฟรี',
+    colName: 'ชื่อ',
+    colContext: 'บริบท',
+    colInputPrice: 'ราคาขาเข้า',
+    colOutputPrice: 'ราคาขาออก',
+    colMaxOutput: 'เอาต์พุตสูงสุด',
+    loadFailed: 'โหลดล้มเหลว',
+  },
+  it: {
+    title: 'Filtro modelli OpenRouter',
+    contextLabel: 'Contesto',
+    inPriceLabel: 'Prezzo input',
+    outPriceLabel: 'Prezzo output',
+    freeLabel: 'Modelli gratuiti',
+    showFree: 'Mostra gratuiti',
+    modalityLabel: 'Modalità',
+    inText: 'Testo input',
+    outText: 'Testo output',
+    paramsLabel: 'Parametri supportati',
+    selectAll: 'Seleziona tutto',
+    clearAll: 'Cancella',
+    matched: 'Corrispondenze',
+    models: 'modelli',
+    loading: 'Caricamento...',
+    unlimited: 'Illimitato',
+    free: 'Gratuito',
+    colName: 'Nome',
+    colContext: 'Contesto',
+    colInputPrice: 'Prezzo input',
+    colOutputPrice: 'Prezzo output',
+    colMaxOutput: 'Output max',
+    loadFailed: 'Caricamento fallito',
+  },
+  tr: {
+    title: 'OpenRouter Model Filtresi',
+    contextLabel: 'Bağlam',
+    inPriceLabel: 'Giriş fiyatı',
+    outPriceLabel: 'Çıkış fiyatı',
+    freeLabel: 'Ücretsiz modeller',
+    showFree: 'Ücretsiz göster',
+    modalityLabel: 'Modalite',
+    inText: 'Giriş metni',
+    outText: 'Çıkış metni',
+    paramsLabel: 'Desteklenen parametreler',
+    selectAll: 'Tümünü seç',
+    clearAll: 'Temizle',
+    matched: 'Eşleşen',
+    models: 'model',
+    loading: 'Yükleniyor...',
+    unlimited: 'Sınırsız',
+    free: 'Ücretsiz',
+    colName: 'Ad',
+    colContext: 'Bağlam',
+    colInputPrice: 'Giriş fiyatı',
+    colOutputPrice: 'Çıkış fiyatı',
+    colMaxOutput: 'Maks çıktı',
+    loadFailed: 'Yükleme başarısız',
+  },
+  nl: {
+    title: 'OpenRouter modelfilter',
+    contextLabel: 'Context',
+    inPriceLabel: 'Invoerprijs',
+    outPriceLabel: 'Uitvoerprijs',
+    freeLabel: 'Gratis modellen',
+    showFree: 'Toon gratis',
+    modalityLabel: 'Modaliteit',
+    inText: 'Invoer tekst',
+    outText: 'Uitvoer tekst',
+    paramsLabel: 'Ondersteunde parameters',
+    selectAll: 'Alles selecteren',
+    clearAll: 'Wissen',
+    matched: 'Overeenkomsten',
+    models: 'modellen',
+    loading: 'Laden...',
+    unlimited: 'Onbeperkt',
+    free: 'Gratis',
+    colName: 'Naam',
+    colContext: 'Context',
+    colInputPrice: 'Invoerprijs',
+    colOutputPrice: 'Uitvoerprijs',
+    colMaxOutput: 'Max uitvoer',
+    loadFailed: 'Laden mislukt',
+  },
+  pl: {
+    title: 'Filtr modeli OpenRouter',
+    contextLabel: 'Kontekst',
+    inPriceLabel: 'Cena wejścia',
+    outPriceLabel: 'Cena wyjścia',
+    freeLabel: 'Darmowe modele',
+    showFree: 'Pokaż darmowe',
+    modalityLabel: 'Modalność',
+    inText: 'Tekst wejściowy',
+    outText: 'Tekst wyjściowy',
+    paramsLabel: 'Obsługiwane parametry',
+    selectAll: 'Zaznacz wszystko',
+    clearAll: 'Wyczyść',
+    matched: 'Dopasowano',
+    models: 'modeli',
+    loading: 'Ładowanie...',
+    unlimited: 'Bez ograniczeń',
+    free: 'Darmowy',
+    colName: 'Nazwa',
+    colContext: 'Kontekst',
+    colInputPrice: 'Cena wejścia',
+    colOutputPrice: 'Cena wyjścia',
+    colMaxOutput: 'Maks wyjście',
+    loadFailed: 'Błąd ładowania',
+  },
+  uk: {
+    title: 'Фільтр моделей OpenRouter',
+    contextLabel: 'Контекст',
+    inPriceLabel: 'Ціна введення',
+    outPriceLabel: 'Ціна виведення',
+    freeLabel: 'Безкоштовні моделі',
+    showFree: 'Показати безкоштовні',
+    modalityLabel: 'Модальність',
+    inText: 'Введення тексту',
+    outText: 'Виведення тексту',
+    paramsLabel: 'Підтримувані параметри',
+    selectAll: 'Вибрати все',
+    clearAll: 'Очистити',
+    matched: 'Збігів',
+    models: 'моделей',
+    loading: 'Завантаження...',
+    unlimited: 'Безлімітно',
+    free: 'Безкоштовно',
+    colName: 'Назва',
+    colContext: 'Контекст',
+    colInputPrice: 'Ціна введення',
+    colOutputPrice: 'Ціна виведення',
+    colMaxOutput: 'Макс виведення',
+    loadFailed: 'Помилка завантаження',
+  },
 };
 
-const t = I18N[LOCALE] || I18N.en;
+// ── Locale resolution ─────────────────────────────────────────────
+function detectLocale() {
+  const stored = localStorage.getItem('or_filter_lang');
+  if (stored && I18N[stored]) return stored;
 
+  const langs = navigator.languages || [navigator.language || DEFAULT_LOCALE];
+  for (const raw of langs) {
+    const lang = raw.replace(/_/g, '-');
+    if (I18N[lang]) return lang;
+    const prefix = lang.split('-')[0];
+    // If we have a specific variant (zh-CN), use exact; otherwise match by prefix
+    const candidates = Object.keys(I18N).filter(k => k.startsWith(prefix + '-') || k === prefix);
+    if (candidates.length > 0) return candidates[0]; // prefer specific variant
+  }
+  return DEFAULT_LOCALE;
+}
+
+let LOCALE = detectLocale();
+let t = I18N[LOCALE] || I18N[DEFAULT_LOCALE];
+
+// ── Apply translations & set RTL if needed ────────────────────────
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     if (t[key] !== undefined) el.textContent = t[key];
   });
-  document.querySelector('html').lang = LOCALE === 'zh' ? 'zh-CN' : LOCALE === 'ja' ? 'ja-JP' : 'en';
+  const html = document.documentElement;
+  const rtlLangs = ['ar'];
+  html.lang = LOCALE;
+  html.dir = rtlLangs.includes(LOCALE) ? 'rtl' : 'ltr';
+
+  // Populate language selector
+  const sel = document.getElementById('langSelect');
+  sel.innerHTML = Object.keys(LOCALES).map(code =>
+    `<option value="${code}"${code === LOCALE ? ' selected' : ''}>${LOCALES[code]}</option>`
+  ).join('');
+
+  // Update title tag
+  document.title = t.title || 'OpenRouter Model Filter';
+
+  // Re-build dynamic UI elements that contain translated text
+  if (typeof allModels !== 'undefined' && allModels.length > 0) {
+    updateTotalCount();
+    buildContextSelects();
+    rebuildTable();
+  }
 }
+
+function switchLang(code) {
+  if (!I18N[code]) return;
+  LOCALE = code;
+  t = I18N[code];
+  localStorage.setItem('or_filter_lang', code);
+  applyI18n();
+}
+
 applyI18n();
 
 // ── Core app ──────────────────────────────────────────────────────
@@ -210,12 +665,16 @@ let allModels = [];
 let sortField = 'completion';
 let sortDir = 1;
 
+function updateTotalCount() {
+  document.getElementById('totalCount').textContent = `(${allModels.length} ${t.models})`;
+}
+
 async function load() {
   try {
     const r = await fetch('https://openrouter.ai/api/v1/models');
     const j = await r.json();
     allModels = j.data || j;
-    document.getElementById('totalCount').textContent = `(${allModels.length} ${t.models})`;
+    updateTotalCount();
     buildContextSelects();
     buildParamCheckboxes();
     apply();
@@ -278,7 +737,6 @@ function apply() {
     return true;
   });
 
-  const matched = t.matched;
   document.getElementById('count').textContent = filtered.length;
 
   filtered.sort((a, b) => {
@@ -295,6 +753,13 @@ function apply() {
     return sortDir * (va - vb);
   });
 
+  rebuildTable(filtered);
+}
+
+function rebuildTable(filtered) {
+  if (!filtered) {
+    filtered = allModels; // fallback, shouldn't happen
+  }
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = filtered.map(m => {
     const pPrompt = pricePerMillion(m.pricing.prompt);
