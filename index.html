@@ -654,11 +654,16 @@ function applyI18n() {
   // Update title tag
   document.title = t.title || 'OpenRouter Model Filter';
 
-  // Re-build dynamic UI elements that contain translated text
+  // Re-translate dynamic UI elements that depend on locale
   if (typeof allModels !== 'undefined' && allModels.length > 0) {
     updateTotalCount();
-    buildContextSelects();
-    rebuildTable();
+    // Update the "unlimited" option text in context selects
+    const unlimitedText = esc(t.unlimited);
+    const minSel = document.getElementById('ctxMin');
+    const maxSel = document.getElementById('ctxMax');
+    if (minSel) minSel.querySelector('option[value="0"]').textContent = unlimitedText;
+    if (maxSel) maxSel.querySelector('option[value="Infinity"]').textContent = unlimitedText;
+    apply();
   }
 }
 
