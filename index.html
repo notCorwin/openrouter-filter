@@ -602,9 +602,17 @@ const I18N = {
   },
 };
 
+// ── Safe localStorage helpers ──────────────────────────────────────
+function getStoredLang() {
+  try { return localStorage.getItem('or_filter_lang'); } catch { return null; }
+}
+function setStoredLang(code) {
+  try { localStorage.setItem('or_filter_lang', code); } catch { /* noop */ }
+}
+
 // ── Locale resolution ─────────────────────────────────────────────
 function detectLocale() {
-  const stored = localStorage.getItem('or_filter_lang');
+  const stored = getStoredLang();
   if (stored && I18N[stored]) return stored;
 
   const langs = navigator.languages || [navigator.language || DEFAULT_LOCALE];
@@ -654,7 +662,7 @@ function switchLang(code) {
   if (!I18N[code]) return;
   LOCALE = code;
   t = I18N[code];
-  localStorage.setItem('or_filter_lang', code);
+  setStoredLang(code);
   applyI18n();
 }
 
