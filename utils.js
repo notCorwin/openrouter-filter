@@ -1,6 +1,6 @@
 // ── Price & formatting utilities ───────────────────────────────────
 function pricePerMillion(s) {
-  if (s === '-1') return null;
+  if (!s || s === '-1') return null;
   if (!s.includes('.')) return Math.max(parseInt(s, 10) * 1000000, 0);
   const [int, frac] = s.split('.');
   const digits = int.replace(/^0+/, '') + frac;

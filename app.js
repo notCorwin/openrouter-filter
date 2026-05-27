@@ -32,8 +32,8 @@ function applyFilter() {
       if (ctxMax !== Infinity && ctx > ctxMax) return false;
     }
 
-    const pPrompt = pricePerMillion(m.pricing.prompt);
-    const pComp   = pricePerMillion(m.pricing.completion);
+    const pPrompt = pricePerMillion((m.pricing || {}).prompt);
+    const pComp   = pricePerMillion((m.pricing || {}).completion);
 
     if (pPrompt !== null) {
       if (pPrompt < inMin) return false;
@@ -59,8 +59,8 @@ function sortFiltered(list) {
       case 'name':      va = a.name;                 vb = b.name;                 break;
       case 'id':        va = a.id;                   vb = b.id;                   break;
       case 'context':   va = a.context_length;       vb = b.context_length;       break;
-      case 'prompt':    va = pricePerMillion(a.pricing.prompt); vb = pricePerMillion(b.pricing.prompt); break;
-      case 'completion':va = pricePerMillion(a.pricing.completion); vb = pricePerMillion(b.pricing.completion); break;
+      case 'prompt':    va = pricePerMillion((a.pricing||{}).prompt); vb = pricePerMillion((b.pricing||{}).prompt); break;
+      case 'completion':va = pricePerMillion((a.pricing||{}).completion); vb = pricePerMillion((b.pricing||{}).completion); break;
       case 'maxOutput': va = a.top_provider?.max_completion_tokens ?? 0;
                          vb = b.top_provider?.max_completion_tokens ?? 0; break;
     }
@@ -88,8 +88,8 @@ function sortBy(field) {
 function renderTable(filtered) {
   const tbody = dom.tbody;
   const rows = filtered.map(m => {
-    const pPrompt = pricePerMillion(m.pricing.prompt);
-    const pComp   = pricePerMillion(m.pricing.completion);
+    const pPrompt = pricePerMillion((m.pricing||{}).prompt);
+    const pComp   = pricePerMillion((m.pricing||{}).completion);
     const promptStr = pPrompt === 0 ? `<span class="free">${esc(t.free)}</span>`
                      : pPrompt === null ? '<span style="color:#888">--</span>'
                      : '$' + fmtPrice(pPrompt);
@@ -126,8 +126,8 @@ function buildContextSelects() {
 function buildPriceSelects() {
   const rawPrices = [];
   allModels.forEach(m => {
-    const pp = pricePerMillion(m.pricing.prompt);
-    const pc = pricePerMillion(m.pricing.completion);
+    const pp = pricePerMillion((m.pricing||{}).prompt);
+    const pc = pricePerMillion((m.pricing||{}).completion);
     if (pp !== null) rawPrices.push(pp);
     if (pc !== null) rawPrices.push(pc);
   });
@@ -181,6 +181,9 @@ function bindEvents() {
     if (!th) return;
     sortBy(th.dataset.sort);
   });
+
+  // Delegate change events for dynamically-built parameter checkboxes
+  dom.paramsBody.addEventListener('change', applyFilter);
 }
 
 // ── Init ───────────────────────────────────────────────────────────
@@ -197,7 +200,6 @@ async function load() {
     buildParamCheckboxes();
     bindEvents();
     applyI18n();
-    dom.count.textContent = allModels.length;
   } catch (e) {
     dom.tbody.innerHTML = `<tr><td colspan="6" class="error">${t.loadFailed}: ${esc(e.message)}</td></tr>`;
   }
