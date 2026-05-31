@@ -71,13 +71,13 @@ function applyFilter() {
 // ── URL state ─────────────────────────────────────────────────────
 function saveFilterState() {
   const p = new URLSearchParams();
-  p.set("ctxMin", dom.ctxMin.value);
-  p.set("ctxMax", dom.ctxMax.value);
-  p.set("inMin", dom.inPriceMin.value);
-  p.set("inMax", dom.inPriceMax.value);
-  p.set("outMin", dom.outPriceMin.value);
-  p.set("outMax", dom.outPriceMax.value);
-  p.set("or", dom.showOpenRouter.checked ? "1" : "0");
+  if (dom.ctxMin) p.set("ctxMin", dom.ctxMin.value);
+  if (dom.ctxMax) p.set("ctxMax", dom.ctxMax.value);
+  if (dom.inPriceMin) p.set("inMin", dom.inPriceMin.value);
+  if (dom.inPriceMax) p.set("inMax", dom.inPriceMax.value);
+  if (dom.outPriceMin) p.set("outMin", dom.outPriceMin.value);
+  if (dom.outPriceMax) p.set("outMax", dom.outPriceMax.value);
+  if (dom.showOpenRouter) p.set("or", dom.showOpenRouter.checked ? "1" : "0");
   const checkedIn = [
     ...document.querySelectorAll(".input-modality-cb:checked"),
   ].map((el) => el.value);
@@ -96,7 +96,7 @@ function saveFilterState() {
 function loadFilterState() {
   const p = new URLSearchParams(location.hash.slice(1));
   const setVal = (id, key) => {
-    if (p.has(key)) dom[id].value = p.get(key);
+    if (p.has(key) && dom[id]) dom[id].value = p.get(key);
   };
   setVal("ctxMin", "ctxMin");
   setVal("ctxMax", "ctxMax");
@@ -104,7 +104,8 @@ function loadFilterState() {
   setVal("inPriceMax", "inMax");
   setVal("outPriceMin", "outMin");
   setVal("outPriceMax", "outMax");
-  if (p.has("or")) dom.showOpenRouter.checked = p.get("or") === "1";
+  if (p.has("or") && dom.showOpenRouter)
+    dom.showOpenRouter.checked = p.get("or") === "1";
   if (p.has("inMods")) {
     const checked = new Set(p.get("inMods").split(","));
     document.querySelectorAll(".input-modality-cb").forEach((el) => {
