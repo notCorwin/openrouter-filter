@@ -1,23 +1,39 @@
 // ── Filter ─────────────────────────────────────────────────────────
 function applyFilter() {
-  const ctxMin   = +dom.ctxMin.value;
-  const ctxMax   = +dom.ctxMax.value;
-  const inMin    = +dom.inPriceMin.value;
-  const inMax    = +dom.inPriceMax.value;
-  const outMin   = +dom.outPriceMin.value;
-  const outMax   = +dom.outPriceMax.value;
-  const showOR   = dom.showOpenRouter.checked;
-  const needIn   = dom.inText.checked;
-  const needOut  = dom.outText.checked;
-  const checkedParams = [...document.querySelectorAll('.param-cb:checked')].map(el => el.value);
+  const ctxMin = +dom.ctxMin.value;
+  const ctxMax = +dom.ctxMax.value;
+  const inMin = +dom.inPriceMin.value;
+  const inMax = +dom.inPriceMax.value;
+  const outMin = +dom.outPriceMin.value;
+  const outMax = +dom.outPriceMax.value;
+  const showOR = dom.showOpenRouter.checked;
+  const checkedInMods = [
+    ...document.querySelectorAll(".input-modality-cb:checked"),
+  ].map((el) => el.value);
+  const checkedOutMods = [
+    ...document.querySelectorAll(".output-modality-cb:checked"),
+  ].map((el) => el.value);
+  const checkedParams = [...document.querySelectorAll(".param-cb:checked")].map(
+    (el) => el.value,
+  );
 
-  const filtered = allModels.filter(m => {
-    if (!showOR && m.id.startsWith('openrouter/')) return false;
+  const filtered = allModels.filter((m) => {
+    if (!showOR && m.id.startsWith("openrouter/")) return false;
 
-    const inputMods  = m.architecture?.input_modalities  || m.input_modalities  || [];
-    const outputMods = m.architecture?.output_modalities || m.output_modalities || [];
-    if (needIn  && !inputMods.includes('text'))  return false;
-    if (needOut && !outputMods.includes('text')) return false;
+    const inputMods =
+      m.architecture?.input_modalities || m.input_modalities || [];
+    const outputMods =
+      m.architecture?.output_modalities || m.output_modalities || [];
+    if (checkedInMods.length > 0) {
+      for (const mod of checkedInMods) {
+        if (!inputMods.includes(mod)) return false;
+      }
+    }
+    if (checkedOutMods.length > 0) {
+      for (const mod of checkedOutMods) {
+        if (!outputMods.includes(mod)) return false;
+      }
+    }
 
     const modelParams = m.supported_parameters || [];
     if (checkedParams.length > 0) {
@@ -33,7 +49,7 @@ function applyFilter() {
     }
 
     const pPrompt = pricePerMillion((m.pricing || {}).prompt);
-    const pComp   = pricePerMillion((m.pricing || {}).completion);
+    const pComp = pricePerMillion((m.pricing || {}).completion);
 
     if (pPrompt !== null) {
       if (pPrompt < inMin) return false;
@@ -55,35 +71,57 @@ function applyFilter() {
 // ── URL state ─────────────────────────────────────────────────────
 function saveFilterState() {
   const p = new URLSearchParams();
-  p.set('ctxMin', dom.ctxMin.value);
-  p.set('ctxMax', dom.ctxMax.value);
-  p.set('inMin', dom.inPriceMin.value);
-  p.set('inMax', dom.inPriceMax.value);
-  p.set('outMin', dom.outPriceMin.value);
-  p.set('outMax', dom.outPriceMax.value);
-  p.set('or', dom.showOpenRouter.checked ? '1' : '0');
-  p.set('itext', dom.inText.checked ? '1' : '0');
-  p.set('otext', dom.outText.checked ? '1' : '0');
-  const checked = [...document.querySelectorAll('.param-cb:checked')].map(el => el.value);
-  if (checked.length) p.set('params', checked.join(','));
+  p.set("ctxMin", dom.ctxMin.value);
+  p.set("ctxMax", dom.ctxMax.value);
+  p.set("inMin", dom.inPriceMin.value);
+  p.set("inMax", dom.inPriceMax.value);
+  p.set("outMin", dom.outPriceMin.value);
+  p.set("outMax", dom.outPriceMax.value);
+  p.set("or", dom.showOpenRouter.checked ? "1" : "0");
+  const checkedIn = [
+    ...document.querySelectorAll(".input-modality-cb:checked"),
+  ].map((el) => el.value);
+  if (checkedIn.length) p.set("inMods", checkedIn.join(","));
+  const checkedOut = [
+    ...document.querySelectorAll(".output-modality-cb:checked"),
+  ].map((el) => el.value);
+  if (checkedOut.length) p.set("outMods", checkedOut.join(","));
+  const checked = [...document.querySelectorAll(".param-cb:checked")].map(
+    (el) => el.value,
+  );
+  if (checked.length) p.set("params", checked.join(","));
   location.hash = p.toString();
 }
 
 function loadFilterState() {
   const p = new URLSearchParams(location.hash.slice(1));
-  const setVal = (id, key) => { if (p.has(key)) dom[id].value = p.get(key); };
-  setVal('ctxMin', 'ctxMin');
-  setVal('ctxMax', 'ctxMax');
-  setVal('inPriceMin', 'inMin');
-  setVal('inPriceMax', 'inMax');
-  setVal('outPriceMin', 'outMin');
-  setVal('outPriceMax', 'outMax');
-  if (p.has('or')) dom.showOpenRouter.checked = p.get('or') === '1';
-  if (p.has('itext')) dom.inText.checked = p.get('itext') === '1';
-  if (p.has('otext')) dom.outText.checked = p.get('otext') === '1';
-  if (p.has('params')) {
-    const checked = new Set(p.get('params').split(','));
-    document.querySelectorAll('.param-cb').forEach(el => { el.checked = checked.has(el.value); });
+  const setVal = (id, key) => {
+    if (p.has(key)) dom[id].value = p.get(key);
+  };
+  setVal("ctxMin", "ctxMin");
+  setVal("ctxMax", "ctxMax");
+  setVal("inPriceMin", "inMin");
+  setVal("inPriceMax", "inMax");
+  setVal("outPriceMin", "outMin");
+  setVal("outPriceMax", "outMax");
+  if (p.has("or")) dom.showOpenRouter.checked = p.get("or") === "1";
+  if (p.has("inMods")) {
+    const checked = new Set(p.get("inMods").split(","));
+    document.querySelectorAll(".input-modality-cb").forEach((el) => {
+      el.checked = checked.has(el.value);
+    });
+  }
+  if (p.has("outMods")) {
+    const checked = new Set(p.get("outMods").split(","));
+    document.querySelectorAll(".output-modality-cb").forEach((el) => {
+      el.checked = checked.has(el.value);
+    });
+  }
+  if (p.has("params")) {
+    const checked = new Set(p.get("params").split(","));
+    document.querySelectorAll(".param-cb").forEach((el) => {
+      el.checked = checked.has(el.value);
+    });
   }
 }
 
@@ -92,15 +130,32 @@ function sortFiltered(list) {
   return list.slice().sort((a, b) => {
     let va, vb;
     switch (sortField) {
-      case 'name':      va = a.name || '';          vb = b.name || '';          break;
-      case 'id':        va = a.id || '';            vb = b.id || '';            break;
-      case 'context':   va = a.context_length;       vb = b.context_length;       break;
-      case 'prompt':    va = pricePerMillion((a.pricing||{}).prompt); vb = pricePerMillion((b.pricing||{}).prompt); break;
-      case 'completion':va = pricePerMillion((a.pricing||{}).completion); vb = pricePerMillion((b.pricing||{}).completion); break;
-      case 'maxOutput': va = a.top_provider?.max_completion_tokens ?? 0;
-                         vb = b.top_provider?.max_completion_tokens ?? 0; break;
+      case "name":
+        va = a.name || "";
+        vb = b.name || "";
+        break;
+      case "id":
+        va = a.id || "";
+        vb = b.id || "";
+        break;
+      case "context":
+        va = a.context_length;
+        vb = b.context_length;
+        break;
+      case "prompt":
+        va = pricePerMillion((a.pricing || {}).prompt);
+        vb = pricePerMillion((b.pricing || {}).prompt);
+        break;
+      case "completion":
+        va = pricePerMillion((a.pricing || {}).completion);
+        vb = pricePerMillion((b.pricing || {}).completion);
+        break;
+      case "maxOutput":
+        va = a.top_provider?.max_completion_tokens ?? 0;
+        vb = b.top_provider?.max_completion_tokens ?? 0;
+        break;
     }
-    if (typeof va === 'string') return sortDir * va.localeCompare(vb);
+    if (typeof va === "string") return sortDir * va.localeCompare(vb);
     if (va == null) va = Infinity;
     if (vb == null) vb = Infinity;
     return sortDir * (va - vb);
@@ -109,13 +164,18 @@ function sortFiltered(list) {
 
 function sortBy(field) {
   if (sortField === field) sortDir = -sortDir;
-  else { sortField = field; sortDir = 1; }
+  else {
+    sortField = field;
+    sortDir = 1;
+  }
 
-  document.querySelectorAll('th .sort').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('s-' + field);
+  document
+    .querySelectorAll("th .sort")
+    .forEach((el) => el.classList.remove("active"));
+  const el = document.getElementById("s-" + field);
   if (el) {
-    el.classList.add('active');
-    el.textContent = sortDir === 1 ? '▲' : '▼';
+    el.classList.add("active");
+    el.textContent = sortDir === 1 ? "▲" : "▼";
   }
   applyFilter();
 }
@@ -123,15 +183,21 @@ function sortBy(field) {
 // ── Table ──────────────────────────────────────────────────────────
 function renderTable(filtered) {
   const tbody = dom.tbody;
-  const rows = filtered.map(m => {
-    const pPrompt = pricePerMillion((m.pricing||{}).prompt);
-    const pComp   = pricePerMillion((m.pricing||{}).completion);
-    const promptStr = pPrompt === 0 ? `<span class="free">${esc(t.free)}</span>`
-                     : pPrompt === null ? '<span style="color:#888">--</span>'
-                     : '$' + fmtPrice(pPrompt);
-    const compStr  = pComp === 0 ? `<span class="free">${esc(t.free)}</span>`
-                     : pComp === null ? '<span style="color:#888">--</span>'
-                     : '$' + fmtPrice(pComp);
+  const rows = filtered.map((m) => {
+    const pPrompt = pricePerMillion((m.pricing || {}).prompt);
+    const pComp = pricePerMillion((m.pricing || {}).completion);
+    const promptStr =
+      pPrompt === 0
+        ? `<span class="free">${esc(t.free)}</span>`
+        : pPrompt === null
+          ? '<span style="color:#888">--</span>'
+          : "$" + fmtPrice(pPrompt);
+    const compStr =
+      pComp === 0
+        ? `<span class="free">${esc(t.free)}</span>`
+        : pComp === null
+          ? '<span style="color:#888">--</span>'
+          : "$" + fmtPrice(pComp);
     return `<tr>
       <td>${esc(m.name)}</td>
       <td class="id-cell" title="${esc(m.id)}">${esc(m.id)}</td>
@@ -141,90 +207,173 @@ function renderTable(filtered) {
       <td class="context">${fmtCtx(m.top_provider?.max_completion_tokens)}</td>
     </tr>`;
   });
-  tbody.innerHTML = rows.join('');
+  tbody.innerHTML = rows.join("");
 }
 
 // ── Select builders ────────────────────────────────────────────────
 function buildContextSelects() {
-  const ctxSet = new Set(allModels.map(m => m.context_length).filter(Boolean));
+  const ctxSet = new Set(
+    allModels.map((m) => m.context_length).filter(Boolean),
+  );
   const ctxSorted = [...ctxSet].sort((a, b) => a - b);
   const unlimitedText = esc(t.unlimited);
-  const opts = ctxSorted.map(n => `<option value="${n}">${fmtCtx(n)}</option>`).join('');
+  const opts = ctxSorted
+    .map((n) => `<option value="${n}">${fmtCtx(n)}</option>`)
+    .join("");
 
   dom.ctxMin.innerHTML = `<option value="0">${unlimitedText}</option>` + opts;
-  dom.ctxMax.innerHTML = opts + `<option value="Infinity">${unlimitedText}</option>`;
+  dom.ctxMax.innerHTML =
+    opts + `<option value="Infinity">${unlimitedText}</option>`;
 
-  const def = ctxSorted.find(n => n >= 256000) || ctxSorted[Math.floor(ctxSorted.length / 2)];
+  const def =
+    ctxSorted.find((n) => n >= 256000) ||
+    ctxSorted[Math.floor(ctxSorted.length / 2)];
   dom.ctxMin.value = def;
-  dom.ctxMax.value = 'Infinity';
+  dom.ctxMax.value = "Infinity";
 }
 
 function buildPriceSelects() {
   const rawPrices = [];
-  allModels.forEach(m => {
-    const pp = pricePerMillion((m.pricing||{}).prompt);
-    const pc = pricePerMillion((m.pricing||{}).completion);
+  allModels.forEach((m) => {
+    const pp = pricePerMillion((m.pricing || {}).prompt);
+    const pc = pricePerMillion((m.pricing || {}).completion);
     if (pp !== null) rawPrices.push(pp);
     if (pc !== null) rawPrices.push(pc);
   });
-  const deduped = [...new Set(rawPrices.map(n => round2(n)))].sort((a, b) => a - b);
-  const makeOpt = n => `<option value="${n}">$${fmtPrice(n)}/M</option>`;
-  const opts = deduped.map(makeOpt).join('');
+  const deduped = [...new Set(rawPrices.map((n) => round2(n)))].sort(
+    (a, b) => a - b,
+  );
+  const makeOpt = (n) => `<option value="${n}">$${fmtPrice(n)}/M</option>`;
+  const opts = deduped.map(makeOpt).join("");
   const hasFree = deduped.includes(0);
   const minOpt = hasFree ? opts : makeOpt(0) + opts;
   const unlimitedText = esc(t.unlimited);
 
-  ['inPriceMin', 'outPriceMin'].forEach(id => dom[id].innerHTML = minOpt);
-  ['inPriceMax', 'outPriceMax'].forEach(id => dom[id].innerHTML = opts + `<option value="Infinity">${unlimitedText}</option>`);
+  ["inPriceMin", "outPriceMin"].forEach((id) => (dom[id].innerHTML = minOpt));
+  ["inPriceMax", "outPriceMax"].forEach(
+    (id) =>
+      (dom[id].innerHTML =
+        opts + `<option value="Infinity">${unlimitedText}</option>`),
+  );
 
-  const firstPaid = deduped.find(n => n > 0) || 0;
-  dom.inPriceMin.value  = firstPaid;
+  const firstPaid = deduped.find((n) => n > 0) || 0;
+  dom.inPriceMin.value = firstPaid;
   dom.outPriceMin.value = firstPaid;
-  dom.inPriceMax.value  = 'Infinity';
-  dom.outPriceMax.value = 'Infinity';
+  dom.inPriceMax.value = "Infinity";
+  dom.outPriceMax.value = "Infinity";
 }
 
 function buildParamCheckboxes() {
   const allParams = new Set();
-  allModels.forEach(m => (m.supported_parameters || []).forEach(p => allParams.add(p)));
+  allModels.forEach((m) =>
+    (m.supported_parameters || []).forEach((p) => allParams.add(p)),
+  );
   const sorted = [...allParams].sort();
 
-  dom.paramsBody.innerHTML = sorted.map(p =>
-    `<label><input type="checkbox" class="param-cb" value="${esc(p)}"${p === 'tools' ? ' checked' : ''}> ${esc(p)}</label>`
-  ).join('');
+  dom.paramsBody.innerHTML = sorted
+    .map(
+      (p) =>
+        `<label><input type="checkbox" class="param-cb" value="${esc(p)}"${p === "tools" ? " checked" : ""}> ${esc(p)}</label>`,
+    )
+    .join("");
 
   dom.paramCount.textContent = `(${sorted.length})`;
 }
 
 function toggleAllParams(checked) {
-  document.querySelectorAll('.param-cb').forEach(el => el.checked = checked);
+  document
+    .querySelectorAll(".param-cb")
+    .forEach((el) => (el.checked = checked));
   applyFilter();
+}
+
+function toggleAllInputModalities(checked) {
+  document
+    .querySelectorAll(".input-modality-cb")
+    .forEach((el) => (el.checked = checked));
+  applyFilter();
+}
+
+function toggleAllOutputModalities(checked) {
+  document
+    .querySelectorAll(".output-modality-cb")
+    .forEach((el) => (el.checked = checked));
+  applyFilter();
+}
+
+function buildModalityCheckboxes() {
+  const inputMods = new Set();
+  const outputMods = new Set();
+  allModels.forEach((m) => {
+    const im = m.architecture?.input_modalities || m.input_modalities || [];
+    const om = m.architecture?.output_modalities || m.output_modalities || [];
+    im.forEach((mod) => inputMods.add(mod));
+    om.forEach((mod) => outputMods.add(mod));
+  });
+
+  const sortedIn = [...inputMods].sort();
+  const sortedOut = [...outputMods].sort();
+
+  dom.inputModalityBody.innerHTML = sortedIn
+    .map(
+      (mod) =>
+        `<label><input type="checkbox" class="input-modality-cb" value="${esc(mod)}"${mod === "text" ? " checked" : ""}> ${esc(mod)}</label>`,
+    )
+    .join("");
+
+  dom.outputModalityBody.innerHTML = sortedOut
+    .map(
+      (mod) =>
+        `<label><input type="checkbox" class="output-modality-cb" value="${esc(mod)}"${mod === "text" ? " checked" : ""}> ${esc(mod)}</label>`,
+    )
+    .join("");
 }
 
 // ── Event binding ──────────────────────────────────────────────────
 function bindEvents() {
-  dom.langSelect.addEventListener('change', () => switchLang(dom.langSelect.value));
+  dom.langSelect.addEventListener("change", () =>
+    switchLang(dom.langSelect.value),
+  );
 
-  ['ctxMin', 'ctxMax', 'inPriceMin', 'inPriceMax', 'outPriceMin', 'outPriceMax']
-    .forEach(id => dom[id].addEventListener('change', applyFilter));
+  [
+    "ctxMin",
+    "ctxMax",
+    "inPriceMin",
+    "inPriceMax",
+    "outPriceMin",
+    "outPriceMax",
+  ].forEach((id) => dom[id].addEventListener("change", applyFilter));
 
-  dom.inText.addEventListener('change', applyFilter);
-  dom.outText.addEventListener('change', applyFilter);
-  dom.showOpenRouter.addEventListener('change', applyFilter);
+  dom.showOpenRouter.addEventListener("change", applyFilter);
+  dom.inputModalityBody.addEventListener("change", applyFilter);
+  dom.outputModalityBody.addEventListener("change", applyFilter);
 
-  dom.thead.addEventListener('click', e => {
-    const th = e.target.closest('th[data-sort]');
+  dom.thead.addEventListener("click", (e) => {
+    const th = e.target.closest("th[data-sort]");
     if (!th) return;
     sortBy(th.dataset.sort);
   });
 
   // Delegate change events for dynamically-built parameter checkboxes
-  dom.paramsBody.addEventListener('change', applyFilter);
+  dom.paramsBody.addEventListener("change", applyFilter);
 
-  dom.selectAllParams.addEventListener('click', () => toggleAllParams(true));
-  dom.clearAllParams.addEventListener('click', () => toggleAllParams(false));
+  dom.selectAllParams.addEventListener("click", () => toggleAllParams(true));
+  dom.clearAllParams.addEventListener("click", () => toggleAllParams(false));
 
-  window.addEventListener('hashchange', () => {
+  dom.inputModalitySelectAll.addEventListener("click", () =>
+    toggleAllInputModalities(true),
+  );
+  dom.inputModalityClearAll.addEventListener("click", () =>
+    toggleAllInputModalities(false),
+  );
+  dom.outputModalitySelectAll.addEventListener("click", () =>
+    toggleAllOutputModalities(true),
+  );
+  dom.outputModalityClearAll.addEventListener("click", () =>
+    toggleAllOutputModalities(false),
+  );
+
+  window.addEventListener("hashchange", () => {
     loadFilterState();
     applyFilter();
   });
@@ -234,14 +383,15 @@ function bindEvents() {
 async function load() {
   cacheDom();
   try {
-    const r  = await fetch('https://openrouter.ai/api/v1/models');
-    const j  = await r.json();
+    const r = await fetch("https://openrouter.ai/api/v1/models");
+    const j = await r.json();
     allModels = j.data || j;
 
     updateCounts();
     buildContextSelects();
     buildPriceSelects();
     buildParamCheckboxes();
+    buildModalityCheckboxes();
     loadFilterState();
     bindEvents();
     applyI18n();

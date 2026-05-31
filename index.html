@@ -1,87 +1,188 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Search and filter OpenRouter models by context length, pricing, modality, and supported parameters.">
-<title>OpenRouter Model Filter</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<noscript><p style="text-align:center;padding:40px;font-family:system-ui,sans-serif;">This app requires JavaScript.</p></noscript>
-<div class="container">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Search and filter OpenRouter models by context length, pricing, modality, and supported parameters."
+        />
+        <title>OpenRouter Model Filter</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <noscript
+            ><p
+                style="
+                    text-align: center;
+                    padding: 40px;
+                    font-family: system-ui, sans-serif;
+                "
+            >
+                This app requires JavaScript.
+            </p></noscript
+        >
+        <div class="container">
+            <div class="header-bar">
+                <h1>
+                    🔍
+                    <span id="title" data-i18n="title"
+                        >OpenRouter Model Filter</span
+                    >
+                </h1>
+                <div class="lang-switch">
+                    🌐
+                    <select id="langSelect"></select>
+                </div>
+            </div>
 
-<div class="header-bar">
-<h1>🔍 <span id="title" data-i18n="title">OpenRouter Model Filter</span></h1>
-<div class="lang-switch">
-  🌐 <select id="langSelect"></select>
-</div>
-</div>
+            <div class="filters">
+                <div class="filter-group">
+                    <label data-i18n="contextLabel">Context</label>
+                    <div class="range-row">
+                        <select id="ctxMin"></select>
+                        <span class="range-sep">~</span>
+                        <select id="ctxMax"></select>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label data-i18n="inPriceLabel">Input price</label>
+                    <div class="range-row">
+                        <select id="inPriceMin"></select>
+                        <span class="range-sep">~</span>
+                        <select id="inPriceMax"></select>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label data-i18n="outPriceLabel">Output price</label>
+                    <div class="range-row">
+                        <select id="outPriceMin"></select>
+                        <span class="range-sep">~</span>
+                        <select id="outPriceMax"></select>
+                    </div>
+                </div>
+                <div class="filter-group modality-wrap">
+                    <label data-i18n="inputModalityLabel"
+                        >Input modalities</label
+                    >
+                    <div class="checkbox-group">
+                        <span
+                            class="all-none"
+                            id="inputModalitySelectAll"
+                            data-i18n="selectAll"
+                            >Select all</span
+                        >
+                        <span
+                            class="all-none"
+                            id="inputModalityClearAll"
+                            data-i18n="clearAll"
+                            >Clear</span
+                        >
+                    </div>
+                    <div class="modality-body" id="inputModalityBody"></div>
+                </div>
+                <div class="filter-group modality-wrap">
+                    <label data-i18n="outputModalityLabel"
+                        >Output modalities</label
+                    >
+                    <div class="checkbox-group">
+                        <span
+                            class="all-none"
+                            id="outputModalitySelectAll"
+                            data-i18n="selectAll"
+                            >Select all</span
+                        >
+                        <span
+                            class="all-none"
+                            id="outputModalityClearAll"
+                            data-i18n="clearAll"
+                            >Clear</span
+                        >
+                    </div>
+                    <div class="modality-body" id="outputModalityBody"></div>
+                </div>
+                <div class="filter-group modality-wrap">
+                    <label data-i18n="showOpenRouter"
+                        >Show OpenRouter native</label
+                    >
+                    <div class="checkbox-group">
+                        <label
+                            ><input type="checkbox" id="showOpenRouter" />
+                            <span data-i18n="showOpenRouter"
+                                >Show OpenRouter native</span
+                            ></label
+                        >
+                    </div>
+                </div>
+                <div class="filter-group params-wrap">
+                    <label
+                        ><span data-i18n="paramsLabel">Supported params</span>
+                        <span id="paramCount"></span
+                    ></label>
+                    <div class="checkbox-group">
+                        <span
+                            class="all-none"
+                            data-i18n="selectAll"
+                            id="selectAllParams"
+                            >Select all</span
+                        >
+                        <span
+                            class="all-none"
+                            data-i18n="clearAll"
+                            id="clearAllParams"
+                            >Clear</span
+                        >
+                    </div>
+                    <div class="params-body" id="paramsBody"></div>
+                </div>
+            </div>
 
-<div class="filters">
-  <div class="filter-group">
-    <label data-i18n="contextLabel">Context</label>
-    <div class="range-row">
-      <select id="ctxMin"></select>
-      <span class="range-sep">~</span>
-      <select id="ctxMax"></select>
-    </div>
-  </div>
-  <div class="filter-group">
-    <label data-i18n="inPriceLabel">Input price</label>
-    <div class="range-row">
-      <select id="inPriceMin"></select>
-      <span class="range-sep">~</span>
-      <select id="inPriceMax"></select>
-    </div>
-  </div>
-  <div class="filter-group">
-    <label data-i18n="outPriceLabel">Output price</label>
-    <div class="range-row">
-      <select id="outPriceMin"></select>
-      <span class="range-sep">~</span>
-      <select id="outPriceMax"></select>
-    </div>
-  </div>
-  <div class="filter-group modality-wrap">
-    <label data-i18n="modalityLabel">Modality</label>
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="inText" checked> <span data-i18n="inText">Input text</span></label>
-      <label><input type="checkbox" id="outText" checked> <span data-i18n="outText">Output text</span></label>
-      <label><input type="checkbox" id="showOpenRouter"> <span data-i18n="showOpenRouter">Show OpenRouter native</span></label>
-    </div>
-  </div>
-  <div class="filter-group params-wrap">
-    <label><span data-i18n="paramsLabel">Supported params</span> <span id="paramCount"></span></label>
-    <div class="checkbox-group">
-      <span class="all-none" data-i18n="selectAll" id="selectAllParams">Select all</span>
-      <span class="all-none" data-i18n="clearAll" id="clearAllParams">Clear</span>
-    </div>
-    <div class="params-body" id="paramsBody"></div>
-  </div>
-</div>
+            <div class="stats">
+                <span
+                    ><span data-i18n="matched">Matched</span>
+                    <strong id="count">-</strong>
+                    <span data-i18n="models">models</span></span
+                >
+                <span id="totalCount"
+                    >(<span data-i18n="loading">Loading...</span>)</span
+                >
+            </div>
 
-<div class="stats">
-  <span><span data-i18n="matched">Matched</span> <strong id="count">-</strong> <span data-i18n="models">models</span></span>
-  <span id="totalCount">(<span data-i18n="loading">Loading...</span>)</span>
-</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th data-sort="name">
+                            <span data-i18n="colName">Name</span>
+                            <span class="sort" id="s-name">▲</span>
+                        </th>
+                        <th data-sort="id">
+                            ID <span class="sort" id="s-id">▲</span>
+                        </th>
+                        <th data-sort="context">
+                            <span data-i18n="colContext">Context</span>
+                            <span class="sort" id="s-context">▲</span>
+                        </th>
+                        <th data-sort="prompt">
+                            <span data-i18n="colInputPrice">Input price</span>
+                            <span class="sort" id="s-prompt">▲</span>
+                        </th>
+                        <th data-sort="completion">
+                            <span data-i18n="colOutputPrice">Output price</span>
+                            <span class="sort" id="s-completion">▲</span>
+                        </th>
+                        <th data-sort="maxOutput">
+                            <span data-i18n="colMaxOutput">Max Output</span>
+                            <span class="sort" id="s-maxOutput">▲</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
 
-<table>
-<thead><tr>
-  <th data-sort="name"><span data-i18n="colName">Name</span> <span class="sort" id="s-name">▲</span></th>
-  <th data-sort="id">ID <span class="sort" id="s-id">▲</span></th>
-  <th data-sort="context"><span data-i18n="colContext">Context</span> <span class="sort" id="s-context">▲</span></th>
-  <th data-sort="prompt"><span data-i18n="colInputPrice">Input price</span> <span class="sort" id="s-prompt">▲</span></th>
-  <th data-sort="completion"><span data-i18n="colOutputPrice">Output price</span> <span class="sort" id="s-completion">▲</span></th>
-  <th data-sort="maxOutput"><span data-i18n="colMaxOutput">Max Output</span> <span class="sort" id="s-maxOutput">▲</span></th>
-</tr></thead>
-<tbody id="tbody"></tbody>
-</table>
-</div>
-
-<script src="state.js"></script>
-<script src="utils.js"></script>
-<script src="i18n.js"></script>
-<script src="app.js"></script>
-</body>
+        <script src="state.js"></script>
+        <script src="utils.js"></script>
+        <script src="i18n.js"></script>
+        <script src="app.js"></script>
+    </body>
 </html>
