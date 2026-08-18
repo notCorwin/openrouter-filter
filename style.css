@@ -219,7 +219,6 @@ select:hover {
 .params-filter {
     grid-column: 1 / -1;
     margin-top: 0;
-    border-top: 1px solid var(--border);
 }
 
 .filter-label {
@@ -265,12 +264,15 @@ select:hover {
     font-size: 12px;
 }
 
-.filter-actions,
-.checkbox-group {
+.switch-body {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: var(--space-1) var(--space-2);
+    padding: var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 3px);
+    background: var(--muted);
 }
 
 .button {
@@ -345,10 +347,6 @@ select:hover {
     cursor: pointer;
     font-size: 12px;
     font-weight: 500;
-}
-
-.checkbox-label {
-    color: var(--muted-foreground);
 }
 
 input[type="checkbox"] {

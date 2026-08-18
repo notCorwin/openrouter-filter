@@ -163,6 +163,14 @@ function sortFiltered(list) {
   });
 }
 
+function updateSortIndicators() {
+  document.querySelectorAll("th .sort").forEach((el) => {
+    const active = el.id === `s-${sortField}`;
+    el.classList.toggle("active", active);
+    el.textContent = active && sortDir === -1 ? "▼" : "▲";
+  });
+}
+
 function sortBy(field) {
   if (sortField === field) sortDir = -sortDir;
   else {
@@ -170,14 +178,7 @@ function sortBy(field) {
     sortDir = 1;
   }
 
-  document
-    .querySelectorAll("th .sort")
-    .forEach((el) => el.classList.remove("active"));
-  const el = document.getElementById("s-" + field);
-  if (el) {
-    el.classList.add("active");
-    el.textContent = sortDir === 1 ? "▲" : "▼";
-  }
+  updateSortIndicators();
   applyFilter();
 }
 
@@ -346,27 +347,6 @@ function buildParamCheckboxes() {
   dom.paramCount.textContent = `(${sorted.length})`;
 }
 
-function toggleAllParams(checked) {
-  document
-    .querySelectorAll(".param-cb")
-    .forEach((el) => (el.checked = checked));
-  applyFilter();
-}
-
-function toggleAllInputModalities(checked) {
-  document
-    .querySelectorAll(".input-modality-cb")
-    .forEach((el) => (el.checked = checked));
-  applyFilter();
-}
-
-function toggleAllOutputModalities(checked) {
-  document
-    .querySelectorAll(".output-modality-cb")
-    .forEach((el) => (el.checked = checked));
-  applyFilter();
-}
-
 function buildModalityCheckboxes() {
   const inputMods = new Set();
   const outputMods = new Set();
@@ -430,22 +410,6 @@ function bindEvents() {
     copyModelId(button);
   });
 
-  dom.selectAllParams.addEventListener("click", () => toggleAllParams(true));
-  dom.clearAllParams.addEventListener("click", () => toggleAllParams(false));
-
-  dom.inputModalitySelectAll.addEventListener("click", () =>
-    toggleAllInputModalities(true),
-  );
-  dom.inputModalityClearAll.addEventListener("click", () =>
-    toggleAllInputModalities(false),
-  );
-  dom.outputModalitySelectAll.addEventListener("click", () =>
-    toggleAllOutputModalities(true),
-  );
-  dom.outputModalityClearAll.addEventListener("click", () =>
-    toggleAllOutputModalities(false),
-  );
-
   window.addEventListener("hashchange", () => {
     loadFilterState();
     applyFilter();
@@ -467,6 +431,7 @@ async function load() {
     buildModalityCheckboxes();
     loadFilterState();
     bindEvents();
+    updateSortIndicators();
     applyI18n();
   } catch (e) {
     dom.tbody.innerHTML = `<tr><td colspan="6" class="error">${t.loadFailed}: ${esc(e.message)}</td></tr>`;

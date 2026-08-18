@@ -20,14 +20,8 @@ function cacheDom() {
     "count",
     "totalCount",
     "tbody",
-    "selectAllParams",
-    "clearAllParams",
     "inputModalityBody",
-    "inputModalitySelectAll",
-    "inputModalityClearAll",
     "outputModalityBody",
-    "outputModalitySelectAll",
-    "outputModalityClearAll",
   ];
   ids.forEach((id) => (dom[id] = document.getElementById(id)));
   dom.thead = document.querySelector("thead");
