@@ -191,13 +191,13 @@ function renderTable(filtered) {
       pPrompt === 0
         ? `<span class="free">${esc(t.free)}</span>`
         : pPrompt === null
-          ? '<span style="color:#888">--</span>'
+          ? '<span class="muted-value">--</span>'
           : "$" + fmtPrice(pPrompt);
     const compStr =
       pComp === 0
         ? `<span class="free">${esc(t.free)}</span>`
         : pComp === null
-          ? '<span style="color:#888">--</span>'
+          ? '<span class="muted-value">--</span>'
           : "$" + fmtPrice(pComp);
     return `<tr>
       <td>${esc(m.name)}</td>

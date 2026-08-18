@@ -11,174 +11,188 @@
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <noscript
-            ><p
-                style="
-                    text-align: center;
-                    padding: 40px;
-                    font-family: system-ui, sans-serif;
-                "
-            >
-                This app requires JavaScript.
-            </p></noscript
-        >
-        <div class="container">
-            <div class="header-bar">
-                <h1>
-                    🔍
-                    <span id="title" data-i18n="title"
-                        >OpenRouter Model Filter</span
-                    >
-                </h1>
-                <div class="lang-switch">
-                    🌐
+        <noscript>
+            <p class="noscript-message">This app requires JavaScript.</p>
+        </noscript>
+        <main class="container">
+            <header class="app-header">
+                <div class="brand">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="10.8" cy="10.8" r="6.5"></circle>
+                            <path d="m16 16 4.5 4.5"></path>
+                        </svg>
+                    </span>
+                    <h1>
+                        <span id="title" data-i18n="title"
+                            >OpenRouter Model Filter</span
+                        >
+                    </h1>
+                </div>
+                <div class="language-control">
+                    <span class="language-icon" aria-hidden="true">🌐</span>
+                    <label class="sr-only" for="langSelect">Language</label>
                     <select id="langSelect"></select>
                 </div>
-            </div>
+            </header>
 
-            <div class="filters">
-                <div class="filter-group">
-                    <label data-i18n="contextLabel">Context</label>
+            <section class="filters filter-card" aria-label="Model filters">
+                <fieldset class="filter-group range-filter">
+                    <legend data-i18n="contextLabel">Context</legend>
                     <div class="range-row">
                         <select id="ctxMin"></select>
-                        <span class="range-sep">~</span>
+                        <span class="range-sep" aria-hidden="true">~</span>
                         <select id="ctxMax"></select>
                     </div>
-                </div>
-                <div class="filter-group">
-                    <label data-i18n="inPriceLabel">Input price</label>
+                </fieldset>
+                <fieldset class="filter-group range-filter">
+                    <legend data-i18n="inPriceLabel">Input price</legend>
                     <div class="range-row">
                         <select id="inPriceMin"></select>
-                        <span class="range-sep">~</span>
+                        <span class="range-sep" aria-hidden="true">~</span>
                         <select id="inPriceMax"></select>
                     </div>
-                </div>
-                <div class="filter-group">
-                    <label data-i18n="outPriceLabel">Output price</label>
+                </fieldset>
+                <fieldset class="filter-group range-filter">
+                    <legend data-i18n="outPriceLabel">Output price</legend>
                     <div class="range-row">
                         <select id="outPriceMin"></select>
-                        <span class="range-sep">~</span>
+                        <span class="range-sep" aria-hidden="true">~</span>
                         <select id="outPriceMax"></select>
                     </div>
-                </div>
-                <div class="filter-group modality-wrap">
-                    <label data-i18n="inputModalityLabel"
-                        >Input modalities</label
-                    >
-                    <div class="checkbox-group">
-                        <span
-                            class="all-none"
+                </fieldset>
+                <fieldset class="filter-group modality-filter">
+                    <legend data-i18n="inputModalityLabel">Input modalities</legend>
+                    <div class="filter-actions">
+                        <button
+                            type="button"
+                            class="button button-ghost button-xs all-none"
                             id="inputModalitySelectAll"
                             data-i18n="selectAll"
-                            >Select all</span
-                        >
-                        <span
-                            class="all-none"
+                        >Select all</button>
+                        <button
+                            type="button"
+                            class="button button-ghost button-xs all-none"
                             id="inputModalityClearAll"
                             data-i18n="clearAll"
-                            >Clear</span
-                        >
+                        >Clear</button>
                     </div>
                     <div class="modality-body" id="inputModalityBody"></div>
-                </div>
-                <div class="filter-group modality-wrap">
-                    <label data-i18n="outputModalityLabel"
-                        >Output modalities</label
-                    >
-                    <div class="checkbox-group">
-                        <span
-                            class="all-none"
+                </fieldset>
+                <fieldset class="filter-group modality-filter">
+                    <legend data-i18n="outputModalityLabel">Output modalities</legend>
+                    <div class="filter-actions">
+                        <button
+                            type="button"
+                            class="button button-ghost button-xs all-none"
                             id="outputModalitySelectAll"
                             data-i18n="selectAll"
-                            >Select all</span
-                        >
-                        <span
-                            class="all-none"
+                        >Select all</button>
+                        <button
+                            type="button"
+                            class="button button-ghost button-xs all-none"
                             id="outputModalityClearAll"
                             data-i18n="clearAll"
-                            >Clear</span
-                        >
+                        >Clear</button>
                     </div>
                     <div class="modality-body" id="outputModalityBody"></div>
-                </div>
-                <div class="filter-group modality-wrap">
-                    <label data-i18n="showOpenRouter"
-                        >Show OpenRouter native</label
-                    >
+                </fieldset>
+                <fieldset class="filter-group switch-filter">
+                    <legend data-i18n="showOpenRouter">Show OpenRouter native</legend>
                     <div class="checkbox-group">
-                        <label
-                            ><input type="checkbox" id="showOpenRouter" />
+                        <label class="checkbox-label" for="showOpenRouter">
+                            <input type="checkbox" id="showOpenRouter" />
                             <span data-i18n="showOpenRouter"
                                 >Show OpenRouter native</span
-                            ></label
-                        >
+                            >
+                        </label>
                     </div>
-                </div>
-                <div class="filter-group params-wrap">
-                    <label
-                        ><span data-i18n="paramsLabel">Supported params</span>
-                        <span id="paramCount"></span
-                    ></label>
-                    <div class="checkbox-group">
-                        <span
-                            class="all-none"
+                </fieldset>
+                <fieldset class="filter-group params-filter">
+                    <legend>
+                        <span data-i18n="paramsLabel">Supported params</span>
+                        <span id="paramCount"></span>
+                    </legend>
+                    <div class="filter-actions">
+                        <button
+                            type="button"
+                            class="button button-ghost button-xs all-none"
                             data-i18n="selectAll"
                             id="selectAllParams"
-                            >Select all</span
-                        >
-                        <span
-                            class="all-none"
+                        >Select all</button>
+                        <button
+                            type="button"
+                            class="button button-ghost button-xs all-none"
                             data-i18n="clearAll"
                             id="clearAllParams"
-                            >Clear</span
-                        >
+                        >Clear</button>
                     </div>
                     <div class="params-body" id="paramsBody"></div>
+                </fieldset>
+            </section>
+
+            <section class="results-section" aria-label="Filtered models">
+                <div class="stats" role="status" aria-live="polite">
+                    <span class="stats-primary">
+                        <span data-i18n="matched">Matched</span>
+                        <strong id="count">-</strong>
+                        <span data-i18n="models">models</span>
+                    </span>
+                    <span id="totalCount"
+                        >(<span data-i18n="loading">Loading...</span>)</span
+                    >
                 </div>
-            </div>
 
-            <div class="stats">
-                <span
-                    ><span data-i18n="matched">Matched</span>
-                    <strong id="count">-</strong>
-                    <span data-i18n="models">models</span></span
-                >
-                <span id="totalCount"
-                    >(<span data-i18n="loading">Loading...</span>)</span
-                >
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th data-sort="name">
-                            <span data-i18n="colName">Name</span>
-                            <span class="sort" id="s-name">▲</span>
-                        </th>
-                        <th data-sort="id">
-                            ID <span class="sort" id="s-id">▲</span>
-                        </th>
-                        <th data-sort="context">
-                            <span data-i18n="colContext">Context</span>
-                            <span class="sort" id="s-context">▲</span>
-                        </th>
-                        <th data-sort="prompt">
-                            <span data-i18n="colInputPrice">Input price</span>
-                            <span class="sort" id="s-prompt">▲</span>
-                        </th>
-                        <th data-sort="completion">
-                            <span data-i18n="colOutputPrice">Output price</span>
-                            <span class="sort" id="s-completion">▲</span>
-                        </th>
-                        <th data-sort="maxOutput">
-                            <span data-i18n="colMaxOutput">Max Output</span>
-                            <span class="sort" id="s-maxOutput">▲</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="tbody"></tbody>
-            </table>
-        </div>
+                <div class="table-card">
+                    <div class="table-scroll">
+                        <table aria-label="OpenRouter models">
+                            <caption class="sr-only">OpenRouter models</caption>
+                            <thead>
+                                <tr>
+                                    <th data-sort="name" scope="col">
+                                        <button class="table-sort" type="button">
+                                            <span data-i18n="colName">Name</span>
+                                            <span class="sort" id="s-name" aria-hidden="true">▲</span>
+                                        </button>
+                                    </th>
+                                    <th data-sort="id" scope="col">
+                                        <button class="table-sort" type="button">
+                                            <span>ID</span>
+                                            <span class="sort" id="s-id" aria-hidden="true">▲</span>
+                                        </button>
+                                    </th>
+                                    <th data-sort="context" scope="col">
+                                        <button class="table-sort" type="button">
+                                            <span data-i18n="colContext">Context</span>
+                                            <span class="sort" id="s-context" aria-hidden="true">▲</span>
+                                        </button>
+                                    </th>
+                                    <th data-sort="prompt" scope="col">
+                                        <button class="table-sort" type="button">
+                                            <span data-i18n="colInputPrice">Input price</span>
+                                            <span class="sort" id="s-prompt" aria-hidden="true">▲</span>
+                                        </button>
+                                    </th>
+                                    <th data-sort="completion" scope="col">
+                                        <button class="table-sort" type="button">
+                                            <span data-i18n="colOutputPrice">Output price</span>
+                                            <span class="sort" id="s-completion" aria-hidden="true">▲</span>
+                                        </button>
+                                    </th>
+                                    <th data-sort="maxOutput" scope="col">
+                                        <button class="table-sort" type="button">
+                                            <span data-i18n="colMaxOutput">Max Output</span>
+                                            <span class="sort" id="s-maxOutput" aria-hidden="true">▲</span>
+                                        </button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
 
         <script src="state.js"></script>
         <script src="utils.js"></script>
