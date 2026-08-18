@@ -46,6 +46,8 @@ const I18N = {
     colOutputPrice: "Output price",
     colMaxOutput: "Max Output",
     loadFailed: "Load failed",
+    copyId: "Copy ID",
+    copied: "Copied",
   },
   "zh-CN": {
     title: "OpenRouter 模型筛选",
@@ -69,6 +71,8 @@ const I18N = {
     colOutputPrice: "输出价格",
     colMaxOutput: "最大输出",
     loadFailed: "加载失败",
+    copyId: "复制 ID",
+    copied: "已复制",
   },
   "zh-TW": {
     title: "OpenRouter 模型篩選",
@@ -92,6 +96,8 @@ const I18N = {
     colOutputPrice: "輸出價格",
     colMaxOutput: "最大輸出",
     loadFailed: "載入失敗",
+    copyId: "複製 ID",
+    copied: "已複製",
   },
   ja: {
     title: "OpenRouter モデルフィルター",
@@ -115,6 +121,8 @@ const I18N = {
     colOutputPrice: "出力価格",
     colMaxOutput: "最大出力",
     loadFailed: "読み込み失敗",
+    copyId: "IDをコピー",
+    copied: "コピーしました",
   },
   ko: {
     title: "OpenRouter 모델 필터",
@@ -138,6 +146,8 @@ const I18N = {
     colOutputPrice: "출력 가격",
     colMaxOutput: "최대 출력",
     loadFailed: "불러오기 실패",
+    copyId: "ID 복사",
+    copied: "복사됨",
   },
   fr: {
     title: "Filtre de modèles OpenRouter",
@@ -161,6 +171,8 @@ const I18N = {
     colOutputPrice: "Prix sortie",
     colMaxOutput: "Sortie max",
     loadFailed: "Échec du chargement",
+    copyId: "Copier l’ID",
+    copied: "Copié",
   },
   de: {
     title: "OpenRouter Modellfilter",
@@ -184,6 +196,8 @@ const I18N = {
     colOutputPrice: "Ausgabepreis",
     colMaxOutput: "Max Ausgabe",
     loadFailed: "Laden fehlgeschlagen",
+    copyId: "ID kopieren",
+    copied: "Kopiert",
   },
   es: {
     title: "Filtro de modelos OpenRouter",
@@ -207,6 +221,8 @@ const I18N = {
     colOutputPrice: "Precio salida",
     colMaxOutput: "Salida máx",
     loadFailed: "Error al cargar",
+    copyId: "Copiar ID",
+    copied: "Copiado",
   },
   pt: {
     title: "Filtro de modelos OpenRouter",
@@ -230,6 +246,8 @@ const I18N = {
     colOutputPrice: "Preço saída",
     colMaxOutput: "Saída máx",
     loadFailed: "Falha ao carregar",
+    copyId: "Copiar ID",
+    copied: "Copiado",
   },
   ru: {
     title: "Фильтр моделей OpenRouter",
@@ -253,6 +271,8 @@ const I18N = {
     colOutputPrice: "Цена вывода",
     colMaxOutput: "Макс вывод",
     loadFailed: "Ошибка загрузки",
+    copyId: "Копировать ID",
+    copied: "Скопировано",
   },
   ar: {
     title: "فلترة نماذج OpenRouter",
@@ -276,6 +296,8 @@ const I18N = {
     colOutputPrice: "سعر الإخراج",
     colMaxOutput: "أقصى إخراج",
     loadFailed: "فشل التحميل",
+    copyId: "نسخ المعرّف",
+    copied: "تم النسخ",
   },
   vi: {
     title: "Bộ lọc mô hình OpenRouter",
@@ -299,6 +321,8 @@ const I18N = {
     colOutputPrice: "Giá đầu ra",
     colMaxOutput: "Đầu ra tối đa",
     loadFailed: "Tải thất bại",
+    copyId: "Sao chép ID",
+    copied: "Đã sao chép",
   },
   th: {
     title: "ตัวกรองโมเดล OpenRouter",
@@ -322,6 +346,8 @@ const I18N = {
     colOutputPrice: "ราคาขาออก",
     colMaxOutput: "เอาต์พุตสูงสุด",
     loadFailed: "โหลดล้มเหลว",
+    copyId: "คัดลอก ID",
+    copied: "คัดลอกแล้ว",
   },
   it: {
     title: "Filtro modelli OpenRouter",
@@ -345,6 +371,8 @@ const I18N = {
     colOutputPrice: "Prezzo output",
     colMaxOutput: "Output max",
     loadFailed: "Caricamento fallito",
+    copyId: "Copia ID",
+    copied: "Copiato",
   },
   tr: {
     title: "OpenRouter Model Filtresi",
@@ -368,6 +396,8 @@ const I18N = {
     colOutputPrice: "Çıkış fiyatı",
     colMaxOutput: "Maks çıktı",
     loadFailed: "Yükleme başarısız",
+    copyId: "ID'yi kopyala",
+    copied: "Kopyalandı",
   },
   nl: {
     title: "OpenRouter modelfilter",
@@ -391,6 +421,8 @@ const I18N = {
     colOutputPrice: "Uitvoerprijs",
     colMaxOutput: "Max uitvoer",
     loadFailed: "Laden mislukt",
+    copyId: "ID kopiëren",
+    copied: "Gekopieerd",
   },
   pl: {
     title: "Filtr modeli OpenRouter",
@@ -414,6 +446,8 @@ const I18N = {
     colOutputPrice: "Cena wyjścia",
     colMaxOutput: "Maks wyjście",
     loadFailed: "Błąd ładowania",
+    copyId: "Kopiuj ID",
+    copied: "Skopiowano",
   },
   uk: {
     title: "Фільтр моделей OpenRouter",
@@ -437,6 +471,8 @@ const I18N = {
     colOutputPrice: "Ціна виведення",
     colMaxOutput: "Макс виведення",
     loadFailed: "Помилка завантаження",
+    copyId: "Копіювати ID",
+    copied: "Скопійовано",
   },
 };
 

@@ -181,6 +181,52 @@ function sortBy(field) {
   applyFilter();
 }
 
+function copyWithLegacyApi(text) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+
+  let copied = false;
+  try {
+    textarea.select();
+    textarea.setSelectionRange(0, textarea.value.length);
+    copied = document.execCommand("copy");
+  } finally {
+    textarea.remove();
+  }
+
+  if (!copied) throw new Error("Clipboard copy failed");
+}
+
+async function copyModelId(button) {
+  const id = button.dataset.copyId;
+  if (!id) return;
+
+  try {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard API unavailable");
+      await navigator.clipboard.writeText(id);
+    } catch {
+      copyWithLegacyApi(id);
+    }
+
+    button.classList.add("is-copied");
+    button.setAttribute("aria-label", t.copied);
+    button.title = t.copied;
+    window.setTimeout(() => {
+      if (!button.isConnected) return;
+      button.classList.remove("is-copied");
+      button.setAttribute("aria-label", t.copyId);
+      button.title = t.copyId;
+    }, 1200);
+  } catch (e) {
+    console.error("Unable to copy model ID", e);
+  }
+}
+
 // ── Table ──────────────────────────────────────────────────────────
 function renderTable(filtered) {
   const tbody = dom.tbody;
@@ -201,7 +247,26 @@ function renderTable(filtered) {
           : "$" + fmtPrice(pComp);
     return `<tr>
       <td>${esc(m.name)}</td>
-      <td class="id-cell" title="${esc(m.id)}">${esc(m.id)}</td>
+      <td class="id-cell">
+        <div class="id-content">
+          <span class="id-value" title="${esc(m.id)}">${esc(m.id)}</span>
+          <button
+            class="button button-ghost button-icon copy-id"
+            type="button"
+            data-copy-id="${esc(m.id)}"
+            aria-label="${esc(t.copyId)}"
+            title="${esc(t.copyId)}"
+          >
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+              <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path>
+            </svg>
+            <svg class="check-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m5 12 4 4L19 6"></path>
+            </svg>
+          </button>
+        </div>
+      </td>
       <td class="context">${fmtCtx(m.context_length)}</td>
       <td class="price">${promptStr}</td>
       <td class="price">${compStr}</td>
@@ -357,6 +422,13 @@ function bindEvents() {
 
   // Delegate change events for dynamically-built parameter checkboxes
   dom.paramsBody.addEventListener("change", applyFilter);
+
+  // Delegate copy actions for dynamically-rendered model IDs
+  dom.tbody.addEventListener("click", (e) => {
+    const button = e.target.closest("button.copy-id");
+    if (!button) return;
+    copyModelId(button);
+  });
 
   dom.selectAllParams.addEventListener("click", () => toggleAllParams(true));
   dom.clearAllParams.addEventListener("click", () => toggleAllParams(false));

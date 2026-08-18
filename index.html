@@ -37,32 +37,48 @@
             </header>
 
             <section class="filters filter-card" aria-label="Model filters">
-                <fieldset class="filter-group range-filter">
-                    <legend data-i18n="contextLabel">Context</legend>
+                <div
+                    class="filter-group range-filter"
+                    role="group"
+                    aria-labelledby="context-filter-label"
+                >
+                    <span class="filter-label" id="context-filter-label" data-i18n="contextLabel">Context</span>
                     <div class="range-row">
                         <select id="ctxMin"></select>
                         <span class="range-sep" aria-hidden="true">~</span>
                         <select id="ctxMax"></select>
                     </div>
-                </fieldset>
-                <fieldset class="filter-group range-filter">
-                    <legend data-i18n="inPriceLabel">Input price</legend>
+                </div>
+                <div
+                    class="filter-group range-filter"
+                    role="group"
+                    aria-labelledby="input-price-filter-label"
+                >
+                    <span class="filter-label" id="input-price-filter-label" data-i18n="inPriceLabel">Input price</span>
                     <div class="range-row">
                         <select id="inPriceMin"></select>
                         <span class="range-sep" aria-hidden="true">~</span>
                         <select id="inPriceMax"></select>
                     </div>
-                </fieldset>
-                <fieldset class="filter-group range-filter">
-                    <legend data-i18n="outPriceLabel">Output price</legend>
+                </div>
+                <div
+                    class="filter-group range-filter"
+                    role="group"
+                    aria-labelledby="output-price-filter-label"
+                >
+                    <span class="filter-label" id="output-price-filter-label" data-i18n="outPriceLabel">Output price</span>
                     <div class="range-row">
                         <select id="outPriceMin"></select>
                         <span class="range-sep" aria-hidden="true">~</span>
                         <select id="outPriceMax"></select>
                     </div>
-                </fieldset>
-                <fieldset class="filter-group modality-filter">
-                    <legend data-i18n="inputModalityLabel">Input modalities</legend>
+                </div>
+                <div
+                    class="filter-group modality-filter"
+                    role="group"
+                    aria-labelledby="input-modality-filter-label"
+                >
+                    <span class="filter-label" id="input-modality-filter-label" data-i18n="inputModalityLabel">Input modalities</span>
                     <div class="filter-actions">
                         <button
                             type="button"
@@ -78,9 +94,13 @@
                         >Clear</button>
                     </div>
                     <div class="modality-body" id="inputModalityBody"></div>
-                </fieldset>
-                <fieldset class="filter-group modality-filter">
-                    <legend data-i18n="outputModalityLabel">Output modalities</legend>
+                </div>
+                <div
+                    class="filter-group modality-filter"
+                    role="group"
+                    aria-labelledby="output-modality-filter-label"
+                >
+                    <span class="filter-label" id="output-modality-filter-label" data-i18n="outputModalityLabel">Output modalities</span>
                     <div class="filter-actions">
                         <button
                             type="button"
@@ -96,9 +116,13 @@
                         >Clear</button>
                     </div>
                     <div class="modality-body" id="outputModalityBody"></div>
-                </fieldset>
-                <fieldset class="filter-group switch-filter">
-                    <legend data-i18n="showOpenRouter">Show OpenRouter native</legend>
+                </div>
+                <div
+                    class="filter-group switch-filter"
+                    role="group"
+                    aria-labelledby="openrouter-filter-label"
+                >
+                    <span class="filter-label" id="openrouter-filter-label" data-i18n="showOpenRouter">Show OpenRouter native</span>
                     <div class="checkbox-group">
                         <label class="checkbox-label" for="showOpenRouter">
                             <input type="checkbox" id="showOpenRouter" />
@@ -107,12 +131,16 @@
                             >
                         </label>
                     </div>
-                </fieldset>
-                <fieldset class="filter-group params-filter">
-                    <legend>
+                </div>
+                <div
+                    class="filter-group params-filter"
+                    role="group"
+                    aria-labelledby="params-filter-label"
+                >
+                    <div class="filter-label" id="params-filter-label">
                         <span data-i18n="paramsLabel">Supported params</span>
                         <span id="paramCount"></span>
-                    </legend>
+                    </div>
                     <div class="filter-actions">
                         <button
                             type="button"
@@ -128,7 +156,7 @@
                         >Clear</button>
                     </div>
                     <div class="params-body" id="paramsBody"></div>
-                </fieldset>
+                </div>
             </section>
 
             <section class="results-section" aria-label="Filtered models">
